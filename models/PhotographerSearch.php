@@ -1,16 +1,15 @@
 <?php
 
-namespace app\modules\account\models;
+namespace app\models;
 
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
-use app\models\ApplicationPhotographer;
-use Yii;
+use app\models\Photographer;
 
 /**
- * ApplicationPhotographerSearch represents the model behind the search form of `app\models\ApplicationPhotographer`.
+ * PhotographerSearch represents the model behind the search form of `app\models\Photographer`.
  */
-class ApplicationPhotographerSearch extends ApplicationPhotographer
+class PhotographerSearch extends Photographer
 {
     /**
      * {@inheritdoc}
@@ -18,8 +17,8 @@ class ApplicationPhotographerSearch extends ApplicationPhotographer
     public function rules()
     {
         return [
-            [['id', 'status_reception_id', 'work_experience', 'user_id', 'payment', 'city_id', 'type_id'], 'integer'],
-            [['comment_admin', 'description', 'portfolio_url'], 'safe'],
+            [['id', 'user_id', 'payment', 'position_id', 'city_id'], 'integer'],
+            [['portfolio_url', 'description'], 'safe'],
         ];
     }
 
@@ -41,10 +40,8 @@ class ApplicationPhotographerSearch extends ApplicationPhotographer
      */
     public function search($params)
     {
-        $query = ApplicationPhotographer::find()
-        ->where([
-            'user_id' => Yii::$app->user->id
-        ]);
+        $query = Photographer::find()
+        ->with(['user', 'city']);
 
         // add conditions that should always apply here
 
@@ -63,17 +60,14 @@ class ApplicationPhotographerSearch extends ApplicationPhotographer
         // grid filtering conditions
         $query->andFilterWhere([
             'id' => $this->id,
-            'status_reception_id' => $this->status_reception_id,
-            'work_experience' => $this->work_experience,
             'user_id' => $this->user_id,
             'payment' => $this->payment,
+            'position_id' => $this->position_id,
             'city_id' => $this->city_id,
-            'type_id' => $this->type_id,
         ]);
 
-        $query->andFilterWhere(['like', 'comment_admin', $this->comment_admin])
-            ->andFilterWhere(['like', 'description', $this->description])
-            ->andFilterWhere(['like', 'portfolio_url', $this->portfolio_url]);
+        $query->andFilterWhere(['like', 'portfolio_url', $this->portfolio_url])
+            ->andFilterWhere(['like', 'description', $this->description]);
 
         return $dataProvider;
     }

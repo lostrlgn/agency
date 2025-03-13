@@ -53,4 +53,9 @@ class Position extends \yii\db\ActiveRecord
     {
         return $this->hasMany(Photographer::class, ['position_id' => 'id']);
     }
+
+    public static function getPositionId($position)
+    {
+        return self::findOne(['title' => $position])->id;
+    }
 }

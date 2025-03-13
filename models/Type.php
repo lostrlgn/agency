@@ -105,4 +105,15 @@ class Type extends \yii\db\ActiveRecord
         ->indexBy('id')
         ->column();
     }
+    public static function getPhotoType($user_id)
+    {
+        $photo_id = PhotographerTypes::getTypePhoto($user_id);
+        $str = '';
+        foreach ($photo_id as $val) {
+            $result = self::findOne(['id' => $val])->title;
+            $str .= $result;
+        }
+        return $str;
+    }
+
 }

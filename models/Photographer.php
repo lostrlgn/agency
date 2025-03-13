@@ -38,10 +38,10 @@ class Photographer extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['user_id', 'portfolio_url', 'work_experience', 'payment', 'position_id', 'city_id'], 'required'],
-            [['user_id', 'work_experience', 'payment', 'position_id', 'city_id'], 'integer'],
-            [['description'], 'string'],
-            [['portfolio_url', 'comment_admin'], 'string', 'max' => 255],
+            [['user_id', 'portfolio_url', 'payment', 'position_id', 'city_id'], 'required'],
+            [['user_id', 'payment', 'position_id', 'city_id'], 'integer'],
+            [['description'], 'safe'],
+            ['portfolio_url', 'string', 'max' => 255],
             [['position_id'], 'exist', 'skipOnError' => true, 'targetClass' => Position::class, 'targetAttribute' => ['position_id' => 'id']],
             [['user_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['user_id' => 'id']],
             [['city_id'], 'exist', 'skipOnError' => true, 'targetClass' => City::class, 'targetAttribute' => ['city_id' => 'id']],
@@ -57,7 +57,6 @@ class Photographer extends \yii\db\ActiveRecord
             'id' => 'ID',
             'user_id' => 'User ID',
             'portfolio_url' => 'Portfolio Url',
-            'work_experience' => 'Work Experience',
             'payment' => 'Payment',
             'description' => 'Description',
             'position_id' => 'Position ID',

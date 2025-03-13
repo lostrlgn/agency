@@ -28,10 +28,13 @@ use Yii;
  * @property Role $role
  */
 use yii\db\ActiveRecord;
+use yii\helpers\VarDumper;
 use yii\web\IdentityInterface;
 
 class User extends ActiveRecord implements IdentityInterface
 {
+    const SCENARIO_UPDATE = 'update';
+    public $imageFile;
     /**
      * {@inheritdoc}
      */
@@ -53,6 +56,11 @@ class User extends ActiveRecord implements IdentityInterface
             [['city_id'], 'exist', 'skipOnError' => true, 'targetClass' => City::class, 'targetAttribute' => ['city_id' => 'id']],
             [['gender_id'], 'exist', 'skipOnError' => true, 'targetClass' => Gender::class, 'targetAttribute' => ['gender_id' => 'id']],
             [['role_id'], 'exist', 'skipOnError' => true, 'targetClass' => Role::class, 'targetAttribute' => ['role_id' => 'id']],
+            ['phone', 'match', 'pattern' => '/^\+7\(\d{3}\)\-\d{3}\-\d{2}\-\d{2}$/'],
+            [['name', 'surname', 'patronymic'], 'required', 'on' => self::SCENARIO_UPDATE],
+            [['name', 'surname', 'patronymic'], 'match', 'pattern' => '/^[а-яА-ЯёЁ\-]+$/ui', 'message' => 'Только кириллические буквы и тире'],
+            [['imageFile'], 'file', 'skipOnEmpty' => true, 'extensions' => 'png, jpg, jpeg'],
+
         ];
     }
 
@@ -63,18 +71,18 @@ class User extends ActiveRecord implements IdentityInterface
     {
         return [
             'id' => 'ID',
-            'name' => 'Name',
-            'surname' => 'Surname',
-            'patronymic' => 'Patronymic',
-            'date_birth' => 'Date Birth',
+            'name' => 'Имя',
+            'surname' => 'Фамилия',
+            'patronymic' => 'Отчество',
+            'date_birth' => 'Дата рождения',
             'email' => 'Email',
-            'phone' => 'Phone',
-            'gender_id' => 'Gender ID',
-            'photo' => 'Photo',
-            'city_id' => 'City ID',
+            'phone' => 'Телефон',
+            'gender_id' => 'Пол',
+            'photo' => 'Фото',
+            'city_id' => 'Город',
             'role_id' => 'Role ID',
             'auth_key' => 'Auth Key',
-            'password' => 'Password',
+            'password' => 'Пароль',
         ];
     }
 
@@ -189,4 +197,27 @@ class User extends ActiveRecord implements IdentityInterface
     {
         return $this->role_id == Role::getRoleId('user');
     }
+    public function getFio()
+    {
+        return $this->name . ' '  . $this->surname;
+    }
+    public function upload(): bool
+    {
+        // VarDumper::dump($this->imageFile, 10, true); die;
+        
+        $result = false;
+        if ($this->validate()) {
+            $result = true;
+            $fileName = Yii::$app->user->id
+            . '_'
+            . Yii::$app->security->generateRandomString(10)
+            . '.' 
+            . $this->imageFile->extension; // Ошибка тут
+        
+            $this->imageFile->saveAs('pictures/' . $fileName);
+            $this->photo = $fileName;
+        }
+        return $result;
+    }
+    
 }

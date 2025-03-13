@@ -41,7 +41,7 @@ $this->registerLinkTag(['rel' => 'icon', 'type' => 'image/x-icon', 'href' => Yii
         'items' => [
             // ['label' => 'Home', 'url' => ['/site/index']],
             // ['label' => 'About', 'url' => ['/site/about']],
-            // ['label' => 'Contact', 'url' => ['/site/contact']],
+            ['label' => 'Фотографы', 'url' => ['/photographer']],
             ! Yii::$app->user->isGuest && Yii::$app->user->identity->isAdmin
                 ? ['label' => 'Панель администрирования', 'url' => ['/admin']]
                 : '',

@@ -66,4 +66,11 @@ class PhotographerTypes extends \yii\db\ActiveRecord
     {
         return $this->hasOne(Type::class, ['id' => 'type_id']);
     }
+    public static function getTypePhoto($photographer_id)
+    {
+        return self::find()
+        ->select('type_id')
+        ->where(['photograpger_id' => $photographer_id])
+        ->column();
+    }
 }

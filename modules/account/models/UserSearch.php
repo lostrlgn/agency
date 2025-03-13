@@ -4,13 +4,12 @@ namespace app\modules\account\models;
 
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
-use app\models\ApplicationPhotographer;
-use Yii;
+use app\models\User;
 
 /**
- * ApplicationPhotographerSearch represents the model behind the search form of `app\models\ApplicationPhotographer`.
+ * UserSearch represents the model behind the search form of `app\models\User`.
  */
-class ApplicationPhotographerSearch extends ApplicationPhotographer
+class UserSearch extends User
 {
     /**
      * {@inheritdoc}
@@ -18,8 +17,8 @@ class ApplicationPhotographerSearch extends ApplicationPhotographer
     public function rules()
     {
         return [
-            [['id', 'status_reception_id', 'work_experience', 'user_id', 'payment', 'city_id', 'type_id'], 'integer'],
-            [['comment_admin', 'description', 'portfolio_url'], 'safe'],
+            [['id', 'gender_id', 'city_id', 'role_id'], 'integer'],
+            [['name', 'surname', 'patronymic', 'date_birth', 'email', 'phone', 'photo', 'auth_key', 'password'], 'safe'],
         ];
     }
 
@@ -41,10 +40,7 @@ class ApplicationPhotographerSearch extends ApplicationPhotographer
      */
     public function search($params)
     {
-        $query = ApplicationPhotographer::find()
-        ->where([
-            'user_id' => Yii::$app->user->id
-        ]);
+        $query = User::find();
 
         // add conditions that should always apply here
 
@@ -63,17 +59,20 @@ class ApplicationPhotographerSearch extends ApplicationPhotographer
         // grid filtering conditions
         $query->andFilterWhere([
             'id' => $this->id,
-            'status_reception_id' => $this->status_reception_id,
-            'work_experience' => $this->work_experience,
-            'user_id' => $this->user_id,
-            'payment' => $this->payment,
+            'date_birth' => $this->date_birth,
+            'gender_id' => $this->gender_id,
             'city_id' => $this->city_id,
-            'type_id' => $this->type_id,
+            'role_id' => $this->role_id,
         ]);
 
-        $query->andFilterWhere(['like', 'comment_admin', $this->comment_admin])
-            ->andFilterWhere(['like', 'description', $this->description])
-            ->andFilterWhere(['like', 'portfolio_url', $this->portfolio_url]);
+        $query->andFilterWhere(['like', 'name', $this->name])
+            ->andFilterWhere(['like', 'surname', $this->surname])
+            ->andFilterWhere(['like', 'patronymic', $this->patronymic])
+            ->andFilterWhere(['like', 'email', $this->email])
+            ->andFilterWhere(['like', 'phone', $this->phone])
+            ->andFilterWhere(['like', 'photo', $this->photo])
+            ->andFilterWhere(['like', 'auth_key', $this->auth_key])
+            ->andFilterWhere(['like', 'password', $this->password]);
 
         return $dataProvider;
     }

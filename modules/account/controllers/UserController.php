@@ -2,21 +2,21 @@
 
 namespace app\modules\account\controllers;
 
-use app\models\ApplicationPhotographer;
 use app\models\City;
-use app\models\RegisterExpert;
-use app\models\StatusReception;
-use app\models\Type;
-use app\modules\account\models\ApplicationPhotographerSearch;
+use app\models\Gender;
+use app\models\User;
+use app\modules\account\models\UserSearch;
+use GuzzleHttp\Psr7\UploadedFile;
 use Yii;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use yii\helpers\VarDumper;
 
 /**
- * ApplicationPhotographerController implements the CRUD actions for ApplicationPhotographer model.
+ * UserController implements the CRUD actions for User model.
  */
-class ApplicationPhotographerController extends Controller
+class UserController extends Controller
 {
     /**
      * @inheritDoc
@@ -37,13 +37,13 @@ class ApplicationPhotographerController extends Controller
     }
 
     /**
-     * Lists all ApplicationPhotographer models.
+     * Lists all User models.
      *
      * @return string
      */
     public function actionIndex()
     {
-        $searchModel = new ApplicationPhotographerSearch();
+        $searchModel = new UserSearch();
         $dataProvider = $searchModel->search($this->request->queryParams);
 
         return $this->render('index', [
@@ -53,7 +53,7 @@ class ApplicationPhotographerController extends Controller
     }
 
     /**
-     * Displays a single ApplicationPhotographer model.
+     * Displays a single User model.
      * @param int $id ID
      * @return string
      * @throws NotFoundHttpException if the model cannot be found
@@ -66,52 +66,68 @@ class ApplicationPhotographerController extends Controller
     }
 
     /**
-     * Creates a new ApplicationPhotographer model.
+     * Creates a new User model.
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return string|\yii\web\Response
      */
     public function actionCreate()
     {
-        $model = new RegisterExpert();
-        $cityes = City::getCityes();
-        $types = Type::getTypes();
+        $model = new User();
 
-
-        if ($model->load(Yii::$app->request->post())) {
-            if ($user = $model->register()) {
-                return $this->goHome();
+        if ($this->request->isPost) {
+            if ($model->load($this->request->post()) && $model->save()) {
+                return $this->redirect(['view', 'id' => $model->id]);
             }
+        } else {
+            $model->loadDefaultValues();
         }
+
         return $this->render('create', [
             'model' => $model,
-            'types' => $types,
-            'cityes' => $cityes,
-
         ]);
     }
 
     /**
-     * Updates an existing ApplicationPhotographer model.
+     * Updates an existing User model.
      * If update is successful, the browser will be redirected to the 'view' page.
      * @param int $id ID
      * @return string|\yii\web\Response
      * @throws NotFoundHttpException if the model cannot be found
      */
-    public function actionUpdate($id)
+
+    public function actionUpdate()
     {
+        $id = Yii::$app->user->id;
         $model = $this->findModel($id);
 
-        if ($this->request->isPost && $model->load($this->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
+        $genders = Gender::getGenders();
+        $model->scenario = User::SCENARIO_UPDATE;
+        $cityes = City::getCityes();
+
+        if ($this->request->isPost && $model->load($this->request->post())) {
+            $model->imageFile = \yii\web\UploadedFile::getInstance($model, 'imageFile'); 
+        
+            if ($model->imageFile && $model->upload()) { 
+                if ($model->save(false)) {
+                    return $this->redirect(['/account']); 
+                }
+            } else {
+                if ($model->save(false)) {
+                    return $this->redirect(['/account']); 
+                }
+            }
         }
 
         return $this->render('update', [
             'model' => $model,
+            'genders' => $genders,
+            'cityes' => $cityes
         ]);
     }
 
+
     /**
-     * Deletes an existing ApplicationPhotographer model.
+     * Deletes an existing User model.
      * If deletion is successful, the browser will be redirected to the 'index' page.
      * @param int $id ID
      * @return \yii\web\Response
@@ -125,38 +141,18 @@ class ApplicationPhotographerController extends Controller
     }
 
     /**
-     * Finds the ApplicationPhotographer model based on its primary key value.
+     * Finds the User model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.
      * @param int $id ID
-     * @return ApplicationPhotographer the loaded model
+     * @return User the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */
     protected function findModel($id)
     {
-        if (($model = ApplicationPhotographer::findOne(['id' => $id])) !== null) {
+        if (($model = User::findOne(['id' => $id])) !== null) {
             return $model;
         }
 
         throw new NotFoundHttpException('The requested page does not exist.');
-    }
-    public function actionCheckApplication()
-    {
-        $userId = Yii::$app->user->id;
-        $application = ApplicationPhotographer::find()
-            ->where([
-                'user_id' => $userId,
-            ])
-            ->one();
-
-        if ($application) {
-            if ($application->status_reception_id == StatusReception::getStatusId('На собеседование') || $application->status_reception_id == StatusReception::getStatusId('Новая')) {
-                return $this->redirect(['view', 'id' => $application->id]);
-            }
-            if ($application->status_reception_id == StatusReception::getStatusId('Отказать') || $application->status_reception_id == StatusReception::getStatusId('Не принят')) {
-                return $this->redirect(['index']);
-            }
-        }
-
-        return $this->redirect(['create']);
     }
 }

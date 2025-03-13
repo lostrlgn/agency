@@ -26,10 +26,5 @@ use yii\bootstrap5\Html;
         Html::a('Не принят', ['fired', 'id' => $model->id], ['class' => 'btn btn-primary'])
      : ''
      ?></p>
-    <p><?= $model->status_reception_id == StatusReception::getStatusId('Принят')
-      ? Html::a('Удалить из системы', ['dismiss', 'id' => $model->id], ['class' => 'btn btn-primary'])
-      :
-       ''
-     ?></p>
 </div>
     

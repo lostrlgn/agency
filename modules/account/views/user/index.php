@@ -1,34 +1,37 @@
 <?php
 
-use app\models\ApplicationPhotographer;
+use app\models\User;
 use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\grid\ActionColumn;
 use yii\widgets\ListView;
 use yii\widgets\Pjax;
 /** @var yii\web\View $this */
-/** @var app\modules\account\models\ApplicationPhotographerSearch $searchModel */
+/** @var app\modules\account\models\UserSearch $searchModel */
 /** @var yii\data\ActiveDataProvider $dataProvider */
 
-$this->title = 'Заявки на сотрудничество';
+$this->title = 'Users';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
-<div class="application-photographer-index">
+<div class="user-index">
 
     <h1><?= Html::encode($this->title) ?></h1>
 
-    <?= Html::a('Снова отправить заявку', ['create'], ['class' => 'btn btn-success']) ?>
+    <p>
+        <?= Html::a('Create User', ['create'], ['class' => 'btn btn-success']) ?>
+    </p>
 
     <?php Pjax::begin(); ?>
-    <?php #echo $this->render('_search', ['model' => $searchModel]); ?>
+    <?php echo $this->render('_search', ['model' => $searchModel]); ?>
 
     <?= ListView::widget([
         'dataProvider' => $dataProvider,
         'itemOptions' => ['class' => 'item'],
-        'itemView' => 'item',
+        'itemView' => function ($model, $key, $index, $widget) {
+            return Html::a(Html::encode($model->name), ['view', 'id' => $model->id]);
+        },
     ]) ?>
 
     <?php Pjax::end(); ?>
 
 </div>
-

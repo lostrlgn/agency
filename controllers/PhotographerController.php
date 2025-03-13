@@ -1,22 +1,18 @@
 <?php
 
-namespace app\modules\account\controllers;
+namespace app\controllers;
 
-use app\models\ApplicationPhotographer;
-use app\models\City;
-use app\models\RegisterExpert;
-use app\models\StatusReception;
-use app\models\Type;
-use app\modules\account\models\ApplicationPhotographerSearch;
-use Yii;
+use app\models\Photographer;
+use app\models\PhotographerSearch;
+use app\models\PhotographerTypes;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 
 /**
- * ApplicationPhotographerController implements the CRUD actions for ApplicationPhotographer model.
+ * PhotographerController implements the CRUD actions for Photographer model.
  */
-class ApplicationPhotographerController extends Controller
+class PhotographerController extends Controller
 {
     /**
      * @inheritDoc
@@ -37,13 +33,13 @@ class ApplicationPhotographerController extends Controller
     }
 
     /**
-     * Lists all ApplicationPhotographer models.
+     * Lists all Photographer models.
      *
      * @return string
      */
     public function actionIndex()
     {
-        $searchModel = new ApplicationPhotographerSearch();
+        $searchModel = new PhotographerSearch();
         $dataProvider = $searchModel->search($this->request->queryParams);
 
         return $this->render('index', [
@@ -53,7 +49,7 @@ class ApplicationPhotographerController extends Controller
     }
 
     /**
-     * Displays a single ApplicationPhotographer model.
+     * Displays a single Photographer model.
      * @param int $id ID
      * @return string
      * @throws NotFoundHttpException if the model cannot be found
@@ -66,32 +62,29 @@ class ApplicationPhotographerController extends Controller
     }
 
     /**
-     * Creates a new ApplicationPhotographer model.
+     * Creates a new Photographer model.
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return string|\yii\web\Response
      */
     public function actionCreate()
     {
-        $model = new RegisterExpert();
-        $cityes = City::getCityes();
-        $types = Type::getTypes();
+        $model = new Photographer();
 
-
-        if ($model->load(Yii::$app->request->post())) {
-            if ($user = $model->register()) {
-                return $this->goHome();
+        if ($this->request->isPost) {
+            if ($model->load($this->request->post()) && $model->save()) {
+                return $this->redirect(['view', 'id' => $model->id]);
             }
+        } else {
+            $model->loadDefaultValues();
         }
+
         return $this->render('create', [
             'model' => $model,
-            'types' => $types,
-            'cityes' => $cityes,
-
         ]);
     }
 
     /**
-     * Updates an existing ApplicationPhotographer model.
+     * Updates an existing Photographer model.
      * If update is successful, the browser will be redirected to the 'view' page.
      * @param int $id ID
      * @return string|\yii\web\Response
@@ -111,7 +104,7 @@ class ApplicationPhotographerController extends Controller
     }
 
     /**
-     * Deletes an existing ApplicationPhotographer model.
+     * Deletes an existing Photographer model.
      * If deletion is successful, the browser will be redirected to the 'index' page.
      * @param int $id ID
      * @return \yii\web\Response
@@ -125,38 +118,18 @@ class ApplicationPhotographerController extends Controller
     }
 
     /**
-     * Finds the ApplicationPhotographer model based on its primary key value.
+     * Finds the Photographer model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.
      * @param int $id ID
-     * @return ApplicationPhotographer the loaded model
+     * @return Photographer the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */
     protected function findModel($id)
     {
-        if (($model = ApplicationPhotographer::findOne(['id' => $id])) !== null) {
+        if (($model = Photographer::findOne(['id' => $id])) !== null) {
             return $model;
         }
 
         throw new NotFoundHttpException('The requested page does not exist.');
-    }
-    public function actionCheckApplication()
-    {
-        $userId = Yii::$app->user->id;
-        $application = ApplicationPhotographer::find()
-            ->where([
-                'user_id' => $userId,
-            ])
-            ->one();
-
-        if ($application) {
-            if ($application->status_reception_id == StatusReception::getStatusId('На собеседование') || $application->status_reception_id == StatusReception::getStatusId('Новая')) {
-                return $this->redirect(['view', 'id' => $application->id]);
-            }
-            if ($application->status_reception_id == StatusReception::getStatusId('Отказать') || $application->status_reception_id == StatusReception::getStatusId('Не принят')) {
-                return $this->redirect(['index']);
-            }
-        }
-
-        return $this->redirect(['create']);
     }
 }

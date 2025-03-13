@@ -3,6 +3,9 @@
 namespace app\modules\admin\controllers;
 
 use app\models\ApplicationPhotographer;
+use app\models\Photographer;
+use app\models\PhotographerTypes;
+use app\models\Position;
 use app\models\Role;
 use app\models\StatusReception;
 use app\modules\admin\models\ApplicationPhotographerSearch;
@@ -171,14 +174,25 @@ class ApplicationPhotographerController extends Controller
     public function actionHired($id) 
     {
         $model = $this->findModel($id);
+        $photographer = new Photographer();
+        $photographerTypes = new PhotographerTypes();
 
         if ($model->status_reception_id == StatusReception::getStatusId('На собеседование')) {
             if ($model->status_reception_id = StatusReception::getStatusId('Принят')) {
                 if ($model->user->role_id = Role::getRoleId('expert')) {
-                    if ($model->save() && $model->user->save()) {
-                        
-                    }
+                    $photographer->attributes = $model->attributes;
+                    $photographer->position_id = Position::getPositionId('Нанят');
+
+                    $photographerTypes->attributes = $model->attributes;
                     
+                    if ($model->save() && $model->user->save() && $photographer->save()) { 
+                        $photographerTypes->photograpger_id = $photographer->id;
+                        if ($photographerTypes->save()) {
+                            
+                        }
+                        
+                                
+                    }  
                 }
             }
         }
@@ -192,6 +206,21 @@ class ApplicationPhotographerController extends Controller
             if ($model->status_reception_id = StatusReception::getStatusId('Не принят')) {
                 if ($model->save()) {
                     
+                }
+            }
+        }
+        return $this->redirect(['index']);
+    }
+    public function actionDismiss($id) 
+    {
+        $model = $this->findModel($id);
+
+        if ($model->status_reception_id == StatusReception::getStatusId('Принят')) {
+            if ($model->status_reception_id = StatusReception::getStatusId('Уволен')) {
+                if ($model->user->role_id = Role::getRoleId('user')) {
+                    if ($model->save() && $model->user->save()) {
+                        
+                    }
                 }
             }
         }

@@ -1,0 +1,31 @@
+.user-header {
+    margin: 20px 0 30px 0;
+}
+.user_photo {
+    width: 90px;
+}
+.user_photo img{
+    width: 100%;
+    border-radius: 100%;
+}
+
+.user_info-name {
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: 10px;
+}
+.user_info-city {
+    font-size: 15px;
+    margin-bottom: 0;
+}
+
+.user_button {
+    margin-top: 20px;
+    margin-left: 200px;
+}
+.photographer_info {
+    margin: 10px 0 10px 30px;
+}
+.photographer_photo {
+    width: 120px;
+}

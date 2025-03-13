@@ -53,4 +53,12 @@ class Gender extends \yii\db\ActiveRecord
     {
         return $this->hasMany(User::class, ['gender_id' => 'id']);
     }
+
+    public static function getGenders()
+    {
+        return self::find()
+        ->select('title')
+        ->indexBy('id')
+        ->column();
+    }
 }

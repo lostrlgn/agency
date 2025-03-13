@@ -34,7 +34,7 @@ class RegisterForm extends Model
             'email' => 'Email',
             'city_id' => 'Город',
             'password' => 'Пароль',
-            'password_repeat' => 'Повторение пароля',
+            'password_repeat' => 'Повтор пароля',
         ];
     }
 
