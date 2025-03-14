@@ -2,6 +2,7 @@
 
 namespace app\modules\admin\models;
 
+use app\models\Position;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
 use app\models\Photographer;
@@ -40,7 +41,10 @@ class PhotographerSearch extends Photographer
      */
     public function search($params)
     {
-        $query = Photographer::find();
+        $query = Photographer::find()
+        ->where([
+            'position_id' => Position::getPositionId('Нанят')
+        ]);
 
         // add conditions that should always apply here
 

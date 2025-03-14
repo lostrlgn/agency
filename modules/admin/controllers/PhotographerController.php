@@ -3,6 +3,9 @@
 namespace app\modules\admin\controllers;
 
 use app\models\Photographer;
+use app\models\Position;
+use app\models\Role;
+use app\models\StatusReception;
 use app\modules\admin\models\PhotographerSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -29,6 +32,21 @@ class PhotographerController extends Controller
                 ],
             ]
         );
+    }
+    public function actionDismiss($id) 
+    {
+        $model = $this->findModel($id);
+
+        if ($model->position_id == Position::getPositionId('Нанят')) {
+            if ($model->position_id = Position::getPositionId('Уволен')) {
+                if ($model->user->role_id = Role::getRoleId('user')) {
+                    if ($model->save() && $model->user->save()) {
+                        
+                    }
+                }
+            }
+        }
+        return $this->redirect(['index']);
     }
 
     /**

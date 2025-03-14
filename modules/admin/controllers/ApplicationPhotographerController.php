@@ -188,7 +188,7 @@ class ApplicationPhotographerController extends Controller
                     if ($model->save() && $model->user->save() && $photographer->save()) { 
                         $photographerTypes->photograpger_id = $photographer->id;
                         if ($photographerTypes->save()) {
-                            
+
                         }
                         
                                 
@@ -211,19 +211,5 @@ class ApplicationPhotographerController extends Controller
         }
         return $this->redirect(['index']);
     }
-    public function actionDismiss($id) 
-    {
-        $model = $this->findModel($id);
-
-        if ($model->status_reception_id == StatusReception::getStatusId('Принят')) {
-            if ($model->status_reception_id = StatusReception::getStatusId('Уволен')) {
-                if ($model->user->role_id = Role::getRoleId('user')) {
-                    if ($model->save() && $model->user->save()) {
-                        
-                    }
-                }
-            }
-        }
-        return $this->redirect(['index']);
-    }
+    
 }
